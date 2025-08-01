@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RDPROTEINS Aquarium Shop</title>
+  <style>
+    :root {
+      --accent: #007566;
+      --accent2: #00a896;
+      --bg-dark: #002b25;
+      --card-bg: rgba(255,255,255,0.08);
+      --glass: rgba(255,255,255,0.14);
+      --radius:18px;
+      --text-light:#eef9ff;
+      --shadow: 0 35px 90px -10px rgba(0, 117, 102, 0.35);
+      --transition: .35s cubic-bezier(.25,.8,.25,1);
+      font-family: system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
+    }
+    * {box-sizing:border-box;}
+    body,html {
+      margin:0;
+      padding:0;
+      min-height:100%;
+      background: linear-gradient(135deg, var(--accent) 0%, #004d40 45%, var(--bg-dark) 100%);
+      color: var(--text-light);
+      position:relative;
+      overflow-x:hidden;
+      scroll-behavior: smooth;
+    }
+    canvas {
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      pointer-events:none;
+      z-index:0;
+    }
+    .container {
+      position: relative;
+      padding: 4rem 1rem 6rem; /* top padding to account for sticky header */
+      max-width: 1200px;
+      margin: 0 auto;
+      z-index:1;
+    }
+    header {
+      position: sticky;
+      top:0;
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content: space-between;
+      gap:1rem;
+      padding:12px 1rem 8px;
+      backdrop-filter: blur(12px);
+      background: rgba(0, 44, 35, 0.85);
+      z-index: 200;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      margin:0;
+      box-shadow: 0 10px 40px -5px rgba(0,0,0,0.3);
+      border-radius: 0 0 12px 12px;
+    }
+    .logo {
+      font-size:1.75rem;
+      font-weight:700;
+      letter-spacing:0.5px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .subline {
+      display:flex;
+      flex-wrap:wrap;
+      gap:1rem;
+      align-items:center;
+      margin-top:4px;
+      font-size:0.85rem;
+      opacity:0.9;
+      gap:12px;
+    }
+    .badge-small {
+      display:inline-block;
+      background: rgba(255,255,255,0.08);
+      padding:6px 14px;
+      border-radius:999px;
+      font-size:0.65rem;
+      letter-spacing:1px;
+      text-transform:uppercase;
+    }
+    .help {
+      display:inline-flex;
+      gap:6px;
+      align-items:center;
+      background: rgba(255,255,255,0.08);
+      padding:6px 14px;
+      border-radius:999px;
+      font-size:0.8rem;
+      cursor:pointer;
+      text-decoration:none;
+      color: inherit;
+      position:relative;
+    }
+    .help svg {
+      stroke: currentColor;
+    }
+    .products {
+      display:grid;
+      grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
+      gap:1.75rem;
+      margin:2rem 0;
+    }
+    .card {
+      background: var(--card-bg);
+      padding:1.5rem;
+      border-radius: var(--radius);
+      position:relative;
+      overflow:hidden;
+      backdrop-filter: blur(14px);
+      display:flex;
+      flex-direction:column;
+      gap:0.75rem;
+      box-shadow: var(--shadow);
+      transition: transform var(--transition), box-shadow var(--transition);
+      border: 1px solid rgba(255,255,255,0.16);
+      opacity:0;
+      transform: translateY(8px);
+      animation: fadeUp .6s ease-out forwards;
+    }
+    .card:nth-child(1) { animation-delay: 0.1s; }
+    .card:nth-child(2) { animation-delay: 0.2s; }
+    .card:hover { transform: translateY(-4px); }
+    .product-img {
+      width:100%;
+      aspect-ratio:1.4;
+      object-fit:contain;
+      border-radius:14px;
+      background: rgba(255,255,255,0.05);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position: relative;
+      overflow:hidden;
+    }
+    .product-img img {
+      max-width:100%;
+      max-height:100%;
+      border-radius:8px;
+    }
+    .title {
+      font-size:1.15rem;
+      font-weight:700;
+      margin:0;
+      letter-spacing:0.5px;
+    }
+    .info-text {
+      margin:0;
+      line-height:1.4;
+      font-size:0.95rem;
+    }
+    .view-btn {
+      margin-top:auto;
+      padding:0.75rem 1rem;
+      border:none;
+      cursor:pointer;
+      font-weight:700;
+      border-radius:12px;
+      background: linear-gradient(135deg,var(--accent2),var(--accent));
+      color:#fff;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      position: relative;
+      overflow:hidden;
+      transition: transform .25s ease, filter .2s ease;
+      box-shadow: 0 18px 50px -5px rgba(0,117,102,0.45);
+    }
+    .view-btn:focus { outline: none; }
+    .view-btn:hover {
+      transform: scale(1.05);
+      filter:brightness(1.05);
+    }
+    .view-btn .shine {
+      position:absolute;
+      top:0;
+      left:-120%;
+      width:60%;
+      height:100%;
+      background: rgba(255,255,255,0.25);
+      transform: skewX(-25deg);
+      filter: blur(12px);
+      animation: sweep 2s ease-in-out infinite;
+    }
+    @keyframes sweep {
+      0% { left: -120%; }
+      60% { left: 120%; }
+      100% { left: 120%; }
+    }
+    @keyframes fadeUp {
+      to { opacity:1; transform: translateY(0); }
+    }
+
+    /* Shop info */
+    .shop-info {
+      display:grid;
+      grid-template-columns: repeat(auto-fit,minmax(240px,1fr));
+      gap:1rem;
+      margin-bottom:2rem;
+    }
+    .info-card {
+      position:relative;
+      background: rgba(255,255,255,0.045);
+      border-radius:18px;
+      padding:1.5rem 1.75rem;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 35px 100px -15px rgba(0,117,102,0.25);
+      transition: transform var(--transition), box-shadow var(--transition);
+      border-left: 4px solid var(--accent2);
+    }
+    .info-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 45px 120px -5px rgba(0,117,102,0.35);
+    }
+    .info-header {
+      display:flex;
+      align-items:center;
+      gap:14px;
+    }
+    .info-header svg {
+      width:28px;
+      height:28px;
+      flex-shrink:0;
+    }
+    .info-title {
+      margin:0;
+      font-size:1.2rem;
+      font-weight:700;
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+    .info-sub {
+      font-size:0.65rem;
+      letter-spacing:1px;
+      text-transform:uppercase;
+      background: linear-gradient(135deg,var(--accent2),var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin:0;
+    }
+    .contact-line {
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-size:0.9rem;
+      margin:4px 0;
+    }
+    .contact-line a {
+      color: inherit;
+      text-decoration:none;
+      font-weight:600;
+    }
+
+    footer {
+      text-align:center;
+      font-size:0.75rem;
+      opacity:0.75;
+      margin-top:3rem;
+    }
+
+    /* Sticky/fixed contact pill */
+    .contact-pill {
+      position:fixed;
+      bottom:20px;
+      right:20px;
+      background: linear-gradient(135deg,var(--accent2),var(--accent));
+      padding:14px 18px;
+      border-radius:999px;
+      display:flex;
+      align-items:center;
+      gap:12px;
+      color:#fff;
+      font-weight:600;
+      cursor:pointer;
+      box-shadow: 0 25px 70px -5px rgba(0,117,102,0.6);
+      z-index: 300;
+      backdrop-filter: blur(6px);
+      transition: transform .2s ease;
+    }
+    .contact-pill:hover { transform: scale(1.03); }
+    .contact-pill svg { width:20px; height:20px; flex-shrink:0; }
+    .contact-actions {
+      position:fixed;
+      bottom:80px;
+      right:20px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      z-index:300;
+    }
+    .action-card {
+      background: rgba(255,255,255,0.08);
+      padding:10px 14px;
+      border-radius:12px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:240px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 25px 70px -10px rgba(0,117,102,0.35);
+      border:1px solid rgba(255,255,255,0.15);
+      color: #fff;
+    }
+    .action-card strong { margin-right:6px; }
+    .action-card a {
+      color: inherit;
+      text-decoration:none;
+      flex:1;
+    }
+    .close-action {
+      background: rgba(255,255,255,0.1);
+      border-radius:50%;
+      width:24px;
+      height:24px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      font-size:12px;
+      color: #002b25;
+    }
+
+    /* Logo emoji float */
+    @keyframes float-sway {
+      0%   { transform: translateY(0) rotate(0deg); }
+      25%  { transform: translateY(-4px) rotate(3deg); }
+      50%  { transform: translateY(0) rotate(0deg); }
+      75%  { transform: translateY(-3px) rotate(-2deg); }
+      100% { transform: translateY(0) rotate(0deg); }
+    }
+    .logo .emoji {
+      display:inline-block;
+      animation: float-sway 4.5s ease-in-out infinite;
+      will-change: transform;
+    }
+
+    @media (prefers-reduced-motion: no-preference){
+      .fish {
+        will-change: transform;
+      }
+    }
+    @media (max-width: 900px) {
+      .contact-actions { right:10px; left:auto; bottom:100px; }
+      .contact-pill { right:10px; bottom:15px; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="sea"></canvas>
+
+  <div class="container">
+    <header>
+      <div>
+        <div class="logo">
+          <div class="emoji" id="logoFish" style="font-size:1.5rem;">🐠</div>
+          <div>RDPROTEINS</div>
+        </div>
+        <div class="subline">
+          <div class="badge-small">Marine Feed Ingredients</div>
+          <div class="help" onclick="scrollToContact()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 8h20M2 12h20M2 16h20"/>
+            </svg>
+            Need help? Contact Us
+          </div>
+        </div>
+      </div>
+      <div>
+        <button style="background:rgba(255,255,255,0.1);border:none;padding:10px 18px;border-radius:12px;color:inherit;cursor:pointer;font-weight:600;">
+          Call Us: +91 98765 43210
+        </button>
+      </div>
+    </header>
+
+    <section class="products">
+      <div class="card">
+        <div class="product-img">
+          <img src="fish.jpg" alt="Crude Fish Oil" />
+        </div>
+        <h2 class="title">CRUDE FISH OIL</h2>
+        <p class="info-text">High-quality fish oil concentrate rich in omega fatty acids. Ideal for feed and supplement formulations.</p>
+        <button class="view-btn">
+          <div class="shine"></div>
+          View
+        </button>
+      </div>
+      <div class="card">
+        <div class="product-img">
+          <img src="fish-meal.jpg" alt="Dried Fish Meal" />
+        </div>
+        <h2 class="title">DRIED FISH MEAL</h2>
+        <p class="info-text">Protein-rich dried fish meal, sustainably processed for animal feed. High digestibility and nutrient density.</p>
+        <button class="view-btn">
+          <div class="shine"></div>
+          View
+        </button>
+      </div>
+    </section>
+
+    <section class="shop-info" id="contact-section">
+      <div class="info-card">
+        <div class="info-header">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <circle cx="12" cy="8" r="1"></circle>
+          </svg>
+          <div>
+            <div class="info-sub">About Us</div>
+            <h3 class="info-title">RDPROTEINS</h3>
+          </div>
+        </div>
+        <p class="info-text">Supplier of premium marine-derived feed ingredients. We specialize in fish oil and fish meal for aquaculture and animal nutrition.</p>
+      </div>
+
+      <div class="info-card">
+        <div class="info-header">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"></path>
+            <circle cx="12" cy="9" r="2.5"></circle>
+          </svg>
+          <div>
+            <div class="info-sub">Location</div>
+            <h3 class="info-title">Shop Address</h3>
+          </div>
+        </div>
+        <p class="info-text">123 Marine Street, Coastal Market, Chennai, India</p>
+      </div>
+
+      <div class="info-card">
+        <div class="info-header">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          <div>
+            <div class="info-sub">Hours</div>
+            <h3 class="info-title">Open Hours</h3>
+          </div>
+        </div>
+        <p class="info-text"><strong>Mon - Sat:</strong> 10:00 AM to 7:00 PM<br/><strong>Sunday:</strong> Closed</p>
+      </div>
+
+      <div class="info-card" id="contact-card">
+        <div class="info-header">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 8V7a2 2 0 0 0-2-2h-3.28a2 2 0 0 0-1.83 1.2L13 9H4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h5l2 3h4l2-3h5a2 2 0 0 0 2-2v-1"></path>
+            <circle cx="8.5" cy="10.5" r="1.5"></circle>
+            <circle cx="15.5" cy="10.5" r="1.5"></circle>
+          </svg>
+          <div>
+            <div class="info-sub">Contact</div>
+            <h3 class="info-title">Get in Touch</h3>
+          </div>
+        </div>
+        <div class="contact-line">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4h16v4H4z"></path>
+            <path d="M4 12h16v8H4z"></path>
+          </svg>
+          <div>Email: <a href="mailto:support@rdproteins.in">support@rdproteins.in</a></div>
+        </div>
+        <div class="contact-line">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2c-9.05-.5-16.34-8.03-16.84-17.08A2 2 0 0 1 5 3h3a2 2 0 0 1 2 1.72c.12 1.05.37 2.08.75 3.05a2 2 0 0 1-.45 2.11L9.7 10.7a16.05 16.05 0 0 0 6.6 6.6l1.82-1.82a2 2 0 0 1 2.11-.45c.97.38 2 .63 3.05.75A2 2 0 0 1 22 16.92z"></path>
+          </svg>
+          <div>Phone: <a href="tel:+919876543210">+91 98765 43210</a></div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div>&copy; 2025 RDPROTEINS. All rights reserved.</div>
+      <div>Designed with care for marine nutrition.</div>
+    </footer>
+  </div>
+
+  <!-- Contact pill + expanded actions -->
+  <div class="contact-actions" id="actions" style="display:none;">
+    <div class="action-card">
+      <div><strong>Email</strong></div>
+      <div style="flex:1;"><a href="mailto:support@rdproteins.in">support@rdproteins.in</a></div>
+    </div>
+    <div class="action-card">
+      <div><strong>Call</strong></div>
+      <div style="flex:1;"><a href="tel:+919876543210">+91 98765 43210</a></div>
+    </div>
+    <div class="action-card" style="justify-content:space-between;">
+      <div>Close</div>
+      <div class="close-action" onclick="toggleActions()">✕</div>
+    </div>
+  </div>
+  <div class="contact-pill" onclick="toggleActions()" aria-label="Contact Us">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 8V7a2 2 0 0 0-2-2h-3.28a2 2 0 0 0-1.83 1.2L13 9H4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h5l2 3h4l2-3h5a2 2 0 0 0 2-2v-1"></path>
+      <circle cx="8.5" cy="10.5" r="1.5"></circle>
+      <circle cx="15.5" cy="10.5" r="1.5"></circle>
+    </svg>
+    <div>Contact Us</div>
+  </div>
+
+  <script>
+    // Canvas fish background
+    const canvas = document.getElementById('sea');
+    const ctx = canvas.getContext('2d');
+    let W, H;
+    function resize() {
+      W = canvas.width = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    class Fish {
+      constructor() {
+        this.reset();
+      }
+      reset() {
+        this.size = Math.random() * 12 + 8;
+        this.x = Math.random() * W;
+        this.y = Math.random() * H;
+        this.speed = Math.random() * 0.5 + 0.3;
+        this.direction = Math.random() < 0.5 ? 1 : -1;
+        this.phase = Math.random() * Math.PI * 2;
+        this.wobble = Math.random() * 6 + 4;
+        this.opacity = Math.random() * 0.5 + 0.3;
+      }
+      update() {
+        this.x += this.speed * this.direction;
+        this.phase += 0.03;
+        this.y += Math.sin(this.phase) * 0.3;
+        if (this.direction === 1 && this.x - this.size > W) this.x = -this.size;
+        if (this.direction === -1 && this.x + this.size < 0) this.x = W + this.size;
+      }
+      draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.scale(this.direction, 1);
+        const grad = ctx.createRadialGradient(0, 0, this.size * 0.2, 0, 0, this.size);
+        grad.addColorStop(0, 'rgba(255,255,255,0.15)');
+        grad.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.ellipse(0, 0, this.size * 1.2, this.size * 0.7, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = 'rgba(255,255,255,0.08)';
+        ctx.beginPath();
+        ctx.moveTo(-this.size * 1, 0);
+        ctx.lineTo(-this.size * 1.6, -this.size * 0.6);
+        ctx.lineTo(-this.size * 1.6, this.size * 0.6);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(this.size * 0.5, -this.size * 0.15, this.size * 0.18, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    const fishCount = Math.min(100, Math.floor((W * H) / 20000));
+    const fishes = [];
+    for (let i = 0; i < fishCount; i++) fishes.push(new Fish());
+
+    function drawBackground() {
+      ctx.clearRect(0, 0, W, H);
+      const gradient = ctx.createLinearGradient(0, 0, 0, H);
+      gradient.addColorStop(0, 'rgba(255,255,255,0.02)');
+      gradient.addColorStop(0.6, 'rgba(255,255,255,0)');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, W, H);
+      fishes.forEach(f => {
+        f.update();
+        f.draw();
+      });
+      requestAnimationFrame(drawBackground);
+    }
+    drawBackground();
+
+    // Logo fish gentle swim drift
+    (function(){
+      const el = document.getElementById('logoFish');
+      let phase = 0;
+      function animate() {
+        phase += 0.04;
+        const y = Math.sin(phase) * 3;
+        const x = Math.sin(phase * 0.7) * 2;
+        const rot = Math.sin(phase * 0.9) * 5;
+        el.style.transform = `translate(${x}px, ${y}px) rotate(${rot}deg)`;
+        requestAnimationFrame(animate);
+      }
+      animate();
+    })();
+
+    // Contact pill toggle
+    function toggleActions() {
+      const a = document.getElementById('actions');
+      a.style.display = a.style.display === 'flex' ? 'none' : 'flex';
+    }
+    function scrollToContact() {
+      document.getElementById('contact-card').scrollIntoView({behavior:'smooth', block:'center'});
+    }
+  </script>
+</body>
+</html>
