@@ -25,7 +25,7 @@
       overflow-x: hidden;
       scroll-behavior: smooth;
     }
-   .fixed-bar {
+    .fixed-bar {
       position: fixed;
       top: 8px;
       left: 50%;
@@ -174,45 +174,78 @@
       100% { transform: translateY(0) rotate(0deg); }
     }
 
-    .carousel {
-      position: relative;
-      width: 100%;
-      height: 400px;
+    /* Gallery Styles (replaces carousel) */
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
       margin: 0 auto 2rem;
-      overflow: hidden;
-      border-radius: 16px;
-      background: rgba(255,255,255,0.05);
     }
-    .carousel img {
-      position: absolute;
-   
+
+    .gallery img {
+      width: 100%;
+      aspect-ratio: 4/3;
       object-fit: cover;
-      opacity: 0;
-      transition: opacity 1s ease-in-out;
-    }
-    .carousel img.active {
-      opacity: 1;
-      z-index: 1;
-    }
-    .carousel-controls {
-      position: absolute;
-      bottom: 12px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 8px;
-    }
-    .carousel-controls button {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      border: none;
-      background: rgba(255,255,255,0.5);
+      border-radius: 14px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+      transition: transform 0.35s ease, box-shadow 0.35s ease;
       cursor: pointer;
-      transition: background 0.3s ease;
     }
-    .carousel-controls button.active {
-      background: var(--accent2);
+
+    .gallery img:hover {
+      transform: scale(1.05);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+    }
+
+    /* Mobile-specific tweaks */
+    @media (max-width: 768px) {
+      .title {
+        font-size: 1.75rem;
+      }
+      .gallery {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      }
+      .gallery img {
+        aspect-ratio: 3/2;
+        height: auto;
+      }
+    }
+
+    /* Lightbox backdrop (optional) */
+    .lightbox-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .lightbox-backdrop.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .lightbox-img {
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 12px;
+      box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+    }
+    .lightbox-close {
+      position: absolute;
+      top: 32px;
+      right: 32px;
+      background: rgba(255,255,255,0.1);
+      border: none;
+      padding: 10px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 1rem;
+      color: #fff;
+      backdrop-filter: blur(8px);
     }
   </style>
 </head>
@@ -221,8 +254,8 @@
   <div class="fixed-bar">
     <div class="fixed-left">
       <div class="logo-wrap"> 
-       <div class="logo">
-        <img src="logo.png" alt="logo" width="50px" height="50px">
+        <div class="logo">
+          <img src="logo.png" alt="logo" width="50px" height="50px">
           <div>RDPROTEINS</div>
         </div>
         <div class="badge-small">Marine Feed Ingredients</div>
@@ -232,31 +265,30 @@
         Need help? Contact Us
       </div>
     </div>
-   <a href="tel:+916303670056" target="_blank" style="text-decoration:none;">
-              <button class="call-btn">Call Us: +91 6303670056</button>
-          </a>
-              <a href="https://wa.me/+919182290654" target="_blank" style="text-decoration:none;">
-                 <button class="call-btn">WhatsApp: +91 9182290654</button>
-          </a>
+    <a href="tel:+916303670056" target="_blank" style="text-decoration:none;">
+      <button class="call-btn">Call Us: +91 6303670056</button>
+    </a>
+    <a href="https://wa.me/+919182290654" target="_blank" style="text-decoration:none;">
+      <button class="call-btn">WhatsApp: +91 9182290654</button>
+    </a>
   </div>
 
   <div class="container">
 
-    <!-- Carousel -->
-    <div class="carousel">
-      <img src="oil1.jpeg" class="active" alt="Fish Oil Image 1">
-      <img src="oil2.jpeg" alt="Fish Oil Image 2">
-      <img src="oil3.jpeg" alt="Fish Oil Image 3">
-      <div class="carousel-controls">
-        <button onclick="setSlide(0)" class="active"></button>
-        <button onclick="setSlide(1)"></button>
-        <button onclick="setSlide(2)"></button>
-      </div>
-    </div>
-
     <div class="subtitle">Marine Feed Ingredients</div>
+         <div style="margin-bottom:70px;"></div>
     <h1 class="title">Crude Fish Oil</h1>
 
+    <!-- Gallery Section -->
+    <div class="gallery">
+         <img src="fishoil1.jpeg" alt="Fish Meal2">
+      <img src="fish.jpg" alt="Fish Meal">
+   
+      <img src="oil1.jpeg" alt="Oil Image 1">
+      <img src="oil2.jpeg" alt="Oil Image 2">
+      <img src="oil3.jpeg" alt="Oil Image 3">
+    </div>
+    <div style="margin-bottom:70px;">Click to view Images</div>
     <div class="description">
       Crude fish oil is extracted during the production of fishmeal. It contains a rich mixture of omega-3 fatty acids, particularly EPA and DHA, and is widely used in animal nutrition, aquaculture, and pharmaceutical applications. It helps improve fertility, growth, and immunity.
     </div>
@@ -271,53 +303,60 @@
         <tr><td>Appearance</td><td>Oily Liquid</td></tr>
         <tr><td>Color</td><td>Yellow to Brown</td></tr>
         <tr><td>Odor</td><td>Typical Fresh Fish Odor</td></tr>
-        <tr><td>Crude Proteins</td><td> 58%</td></tr>
-        <tr><td>Free Fatty Acid (FFA)</td><td> 8%</td></tr>
-        <tr><td>EPA + DHA</td><td> 20%</td></tr>
-        <tr><td>Iodine</td><td> 143.9 gI2 / 100gm</td></tr>
-        <tr><td>Moisture</td><td> 1%</td></tr>
-        <tr><td>Impurities</td><td> 0.5%</td></tr>
-        <tr><td>Peroxide Value</td><td> 3.11 meq/kg</td></tr>
-         <tr><td>Other Components</td><td> 12.5% </td></tr>
+        <tr><td>Crude Proteins</td><td>58%</td></tr>
+        <tr><td>Free Fatty Acid (FFA)</td><td>8%</td></tr>
+        <tr><td>EPA + DHA</td><td>20%</td></tr>
+        <tr><td>Iodine</td><td>143.9 gI2 / 100gm</td></tr>
+        <tr><td>Moisture</td><td>1%</td></tr>
+        <tr><td>Impurities</td><td>0.5%</td></tr>
+        <tr><td>Peroxide Value</td><td>3.11 meq/kg</td></tr>
+        <tr><td>Other Components</td><td>12.5%</td></tr>
         <tr><td>Uses</td><td>Aquaculture, Poultry, Fish Feed, Pet Food, Fertilizer, Pharma, Agriculture use</td></tr>
       </table>
     </div>
-<a href="https://wa.me/+919182290654" target="_blank" style="text-decoration:none;">
-    <button class="buy-btn">Enquire Now</button>
-</a>
 
+    <a href="https://wa.me/+919182290654" target="_blank" style="text-decoration:none;">
+      <button class="buy-btn">Enquire Now</button>
+    </a>
 
     <footer>
       <div>&copy; 2025 RDPROTEINS. All rights reserved.</div>
     </footer>
   </div>
 
-  <!-- Carousel script -->
+  <!-- Lightbox markup -->
+  <div class="lightbox-backdrop" id="lightbox">
+    <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+    <img src="" alt="Enlarged" class="lightbox-img" id="lightboxImg">
+  </div>
+
   <script>
-    let currentSlide = 0;
-    const slides = document.querySelectorAll('.carousel img');
-    const dots = document.querySelectorAll('.carousel-controls button');
+    // Lightbox for gallery images
+    const galleryImgs = document.querySelectorAll('.gallery img');
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightboxImg');
 
-    function showSlide(index) {
-      slides.forEach((img, i) => {
-        img.classList.toggle('active', i === index);
-        dots[i].classList.toggle('active', i === index);
+    galleryImgs.forEach(img => {
+      img.addEventListener('click', () => {
+        lightboxImg.src = img.src;
+        lightbox.classList.add('active');
       });
-      currentSlide = index;
+    });
+
+    function closeLightbox() {
+      lightbox.classList.remove('active');
+      lightboxImg.src = '';
     }
 
-    function setSlide(index) {
-      clearInterval(autoSlide);
-      showSlide(index);
-      autoSlide = setInterval(nextSlide, 4000);
-    }
+    // Close on backdrop click
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox) closeLightbox();
+    });
 
-    function nextSlide() {
-      currentSlide = (currentSlide + 1) % slides.length;
-      showSlide(currentSlide);
-    }
-
-    let autoSlide = setInterval(nextSlide, 4000);
+    // Close on escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeLightbox();
+    });
   </script>
 </body>
 </html>
