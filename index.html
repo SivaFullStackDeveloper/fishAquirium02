@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>RDPROTEINS </title>
+  <title>RDPROTEINS</title>
   <style>
     :root {
       --accent: #007566;
@@ -39,14 +39,46 @@
     }
     .container {
       position: relative;
-      padding: 5.25rem 1rem 6rem; /* account for fixed bar + header */
+      padding: 5.25rem 1rem 6rem;
       max-width: 1200px;
       margin: 0 auto;
       z-index:1;
     }
 
     /* Fixed top bar */
-    
+    .fixed-bar {
+      position: fixed;
+      top: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 32px);
+      max-width: 1200px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 16px;
+      background: rgba(0, 44, 35, 0.85);
+      border-radius: 12px;
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 15px 60px -5px rgba(0,0,0,0.35);
+      z-index: 1000;
+      font-size: 0.95rem;
+      transition: transform var(--transition);
+      will-change: transform;
+    }
+    .fixed-bar.hidden {
+      transform: translate(-50%, -120%);
+    }
+    .fixed-left {
+      display: flex;
+      align-items:center;
+      gap:16px;
+      flex-wrap: wrap;
+      min-width:0;
+    }
     .logo-wrap {
       display: flex;
       flex-direction: column;
@@ -383,7 +415,7 @@
   <canvas id="sea"></canvas>
 
   <!-- Fixed top bar with logo + badge below + help + call -->
-  <div class="fixed-bar">
+  <div class="fixed-bar" id="fixedBar">
     <div class="fixed-left">
       <div class="logo-wrap">
         <div class="logo">
@@ -403,7 +435,7 @@
       <button class="call-btn">Call Us: +91 98765 43210</button>
     </div>
   </div>
-<div style="margin-bottom:70px;"></div>
+  <div style="margin-bottom:70px;"></div>
   <div class="container">
     
     <section class="products">
@@ -413,12 +445,10 @@
         </div>
         <h2 class="title">CRUDE FISH OIL</h2>
         <p class="info-text">High-quality fish oil concentrate rich in omega fatty acids. Ideal for feed and supplement formulations.</p>
-       <a href="crude-fish-oil.html" class="view-btn">
-  <div class="shine"></div>
-  View
-</a>
-
-
+        <a href="crude-fish-oil.html" class="view-btn">
+          <div class="shine"></div>
+          View
+        </a>
       </div>
       <div class="card">
         <div class="product-img">
@@ -426,10 +456,10 @@
         </div>
         <h2 class="title">DRIED FISH MEAL</h2>
         <p class="info-text">Protein-rich dried fish meal, sustainably processed for animal feed. High digestibility and nutrient density.</p>
-               <a href="dried-fish-meal.html" class="view-btn">
-  <div class="shine"></div>
-  View
-</a>
+        <a href="dried-fish-meal.html" class="view-btn">
+          <div class="shine"></div>
+          View
+        </a>
       </div>
     </section>
 
@@ -641,6 +671,33 @@
     function scrollToContact() {
       document.getElementById('contact-card').scrollIntoView({behavior:'smooth', block:'center'});
     }
+
+    // Hide/show fixed bar on scroll direction
+    (function() {
+      let lastScrollY = window.scrollY;
+      let ticking = false;
+      const fixedBar = document.getElementById('fixedBar');
+
+      function update() {
+        const currentY = window.scrollY;
+        if (currentY > lastScrollY + 5) {
+          // scrolling down -> hide
+          fixedBar.classList.add('hidden');
+        } else if (currentY < lastScrollY - 5) {
+          // scrolling up -> show
+          fixedBar.classList.remove('hidden');
+        }
+        lastScrollY = currentY;
+        ticking = false;
+      }
+
+      window.addEventListener('scroll', () => {
+        if (!ticking) {
+          window.requestAnimationFrame(update);
+          ticking = true;
+        }
+      });
+    })();
   </script>
 </body>
 </html>
