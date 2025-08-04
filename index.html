@@ -395,7 +395,90 @@
       font-size:12px;
       color: #002b25;
     }
-
+ .help-widget {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 500;
+    font-family: system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
+  }
+  .help-pill {
+    background: #fff;
+    color: #002b25;
+    padding: 10px 18px;
+    border-radius: 999px;
+    box-shadow: 0 15px 50px -5px rgba(0,0,0,0.25);
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+    min-width: 140px;
+    font-size: 0.9rem;
+  }
+  .help-pill .chevron {
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .help-logo-circle {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: linear-gradient(135deg,var(--accent2),var(--accent));
+    display: flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow: 0 20px 60px -5px rgba(0,117,102,0.5);
+    cursor: pointer;
+  }
+  .help-menu {
+    position: absolute;
+    bottom: 70px;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: rgba(255,255,255,0.95);
+    border-radius: 14px;
+    padding: 10px;
+    min-width: 200px;
+    box-shadow: 0 25px 80px -10px rgba(0,0,0,0.25);
+    overflow: hidden;
+    font-size: 0.85rem;
+  }
+  .help-menu .option {
+    background: #002b25;
+    color: #fff;
+    border-radius: 10px;
+    padding: 10px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .help-menu .option small {
+    opacity: 0.85;
+    font-size: 0.65rem;
+    display:block;
+  }
+  .help-menu .close-x {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    color: #002b25;
+    font-weight: 700;
+  }
     /* Float animation */
     @keyframes float-sway {
       0%   { transform: translateY(0) rotate(0deg); }
@@ -514,7 +597,7 @@
             <h3 class="info-title">Open 24 Hours</h3>
           </div>
         </div>
-        <p class="info-text"><strong>Everyday</strong> Open 24 Hours<br/>
+        <p class="info-text"><strong>Everyday</strong> Open 24 Hours<br/></p>
       </div>
 
       <div class="info-card" id="contact-card">
@@ -558,23 +641,73 @@
     </footer>
   </div>
 
-  <!-- Contact pill + expanded actions -->
-  
-<!-- Start of HubSpot Embed Code -->
-  <script type="text/javascript" id="hs-script-loader" async defer src="//js-na2.hs-scripts.com/243495124.js"></script>
-<!-- End of HubSpot Embed Code -->
+  <!-- Help pill with expanded options -->
+
+<div class="help-widget" id="helpWidget">
+  <div class="help-pill" id="helpPill" onclick="toggleHelpMenu(event)">
+    <div>May I help you?</div>
+    <div class="chevron">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 6l6 6-6 6"></path>
+      </svg>
+    </div>
+  </div>
+  <div class="help-logo-circle" onclick="toggleHelpMenu(event)">
+    <img src="logo.png" alt="logo" style="width:50px; height:50px; border-radius:50%;">
+  </div>
+
+  <div class="help-menu" id="helpMenu" style="display:none;">
+    <div class="close-x" onclick="closeHelpMenu(event)">×</div>
+    <a href="https://wa.me/919182290654?text=I%20am%20interested%20in%20buying%20Crude%20Fish%20Oil%2C%20Packaging%20Type%3A%20PP%20Bags%2C%20for%20Aquaculture%20Industry.%20Kindly%20send%20me%20price%20and%20other%20details." target="_blank" class="option">
+  <div>
+    <div>Crude Fish Oil</div>
+    <small>View details</small>
+  </div>
+  <div>›</div>
+</a>
+<a href="https://wa.me/919182290654?text=I%20am%20interested%20in%20buying%20Fish%20Meal%2C%20Packaging%20Type%3A%20PP%20Bags%2C%20for%20Aquaculture%20Industry.%20Kindly%20send%20me%20price%20and%20other%20details." target="_blank" class="option">
+  <div>
+    <div>Dried Fish Meal</div>
+    <small>View details</small>
+  </div>
+  <div>›</div>
+</a>
+  </div>
+</div>
+
+<script>
+  function toggleHelpMenu(e) {
+    e.stopPropagation();
+    const menu = document.getElementById('helpMenu');
+    if (!menu) return;
+    menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
+    if (menu.style.display === 'flex') {
+      menu.style.flexDirection = 'column';
+    }
+  }
+  function closeHelpMenu(e) {
+    e.stopPropagation();
+    const menu = document.getElementById('helpMenu');
+    if (!menu) return;
+    menu.style.display = 'none';
+  }
+  document.addEventListener('click', (e) => {
+    const menu = document.getElementById('helpMenu');
+    const pill = document.getElementById('helpPill');
+    const widget = document.getElementById('helpWidget');
+    if (!menu || !widget) return;
+    if (!widget.contains(e.target)) {
+      menu.style.display = 'none';
+    }
+  });
+</script>
+
   <script>
     // Canvas fish background
     const canvas = document.getElementById('sea');
     const ctx = canvas.getContext('2d');
     let W, H;
-    function resize() {
-      W = canvas.width = window.innerWidth;
-      H = canvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resize);
-    resize();
-
     class Fish {
       constructor() {
         this.reset();
@@ -597,6 +730,7 @@
         if (this.direction === -1 && this.x + this.size < 0) this.x = W + this.size;
       }
       draw() {
+        if (!ctx) return;
         ctx.save();
         ctx.translate(this.x, this.y);
         ctx.scale(this.direction, 1);
@@ -622,11 +756,23 @@
       }
     }
 
-    const fishCount = Math.min(100, Math.floor((W * H) / 20000));
-    const fishes = [];
-    for (let i = 0; i < fishCount; i++) fishes.push(new Fish());
+    let fishes = [];
+    function initFishes() {
+      const fishCount = Math.min(100, Math.floor((W * H) / 20000));
+      fishes = [];
+      for (let i = 0; i < fishCount; i++) fishes.push(new Fish());
+    }
+
+    function resize() {
+      W = canvas.width = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+      initFishes();
+    }
+    window.addEventListener('resize', resize);
+    resize();
 
     function drawBackground() {
+      if (!ctx) return;
       ctx.clearRect(0, 0, W, H);
       const gradient = ctx.createLinearGradient(0, 0, 0, H);
       gradient.addColorStop(0, 'rgba(255,255,255,0.02)');
@@ -664,6 +810,7 @@
     // Contact pill toggle
     function toggleActions() {
       const a = document.getElementById('actions');
+      if (!a) return;
       a.style.display = a.style.display === 'flex' ? 'none' : 'flex';
     }
     function scrollToContact() {
@@ -697,7 +844,28 @@
       });
     })();
 
+    // Help pill toggle logic
+    function toggleHelpOptions() {
+      const opts = document.getElementById('helpOptions');
+      if (!opts) return;
+      opts.style.display = opts.style.display === 'flex' ? 'none' : 'flex';
+    }
+    function closeHelpOptions(e) {
+      e.stopPropagation();
+      const opts = document.getElementById('helpOptions');
+      if (!opts) return;
+      opts.style.display = 'none';
+    }
+
+    // Close help options when clicking outside
+    document.addEventListener('click', (e) => {
+      const pill = document.getElementById('helpPill');
+      const opts = document.getElementById('helpOptions');
+      if (!pill || !opts) return;
+      if (!pill.contains(e.target) && !opts.contains(e.target)) {
+        opts.style.display = 'none';
+      }
+    });
   </script>
-  <script id="messenger-widget-b" src="https://cdn.botpenguin.com/website-bot.js" defer>688f73557bfee4037ce7d19f,688f72bee043a9aed34660b6</script>
 </body>
 </html>
